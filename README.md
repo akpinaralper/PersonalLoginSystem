@@ -122,7 +122,9 @@ Katkılar her zaman açıktır! Yeni özellikler eklemek, hataları düzeltmek v
 ```
 
 
-
+🚀 Hazırlayan: [Alper Akpınar]
+🏢 Proje Versiyonu: 1.0.0
+📅 İlk Yayın Tarihi: 2025 
 
 
 

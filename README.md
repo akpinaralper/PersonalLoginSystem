@@ -1,142 +1,125 @@
-# PersonalLoginSystem
-PersonelGirişTakipSistemi
+# 🧑‍💼 Personel Giriş Takip Sistemi
 
+![Flask](https://img.shields.io/badge/Flask-000000?style=for-the-badge&logo=flask&logoColor=white)
+![SQLite]( https://img.shields.io/badge/SQLite-00385C?style=for-the-badge&logo=sqlite&logoColor=white)
+![Python]( https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![Bootstrap]( https://img.shields.io/badge/Bootstrap-563D7C?style=for-the-badge&logo=bootstrap&logoColor=white)
 
-Proje Hakkında
-Bu uygulama, küçük ve orta ölçekli işletmelerin personel verilerini ve günlük giriş/çıkış kayıtlarını kolayca yönetmelerini sağlar. Güvenli giriş mekanizmaları, kullanıcı dostu arayüzler ve temel raporlama özellikleriyle donatılmıştır.
+> **Personel Giriş Takip Sistemi**, Flask ve SQLite kullanılarak geliştirilmiş bir web tabanlı personel devam takip uygulamasıdır. Yönetici paneli, e-posta doğrulamalı giriş, yoklama kaydı ve raporlama gibi birçok özellik sunar.
 
-Özellikler
-Yönetici Paneli
-Güvenli Yönetici Girişi: Şifrelenmiş parola ile güvenli giriş.
+---
 
-Genel Bakış (Dashboard): Toplam personel ve admin sayılarının gösterildiği özet panel.
+## 🌟 Özellikler
 
-Admin Yönetimi: Yeni admin hesapları ekleme, mevcut admin bilgilerini (kullanıcı adı, e-posta, şifre) güncelleme ve silme.
+### 👑 Yönetici Paneli
+- **🔑 Güvenli Giriş:** Yöneticiler için parola korumalı özel giriş ekranı.
+- **👥 Personel Yönetimi (CRUD):**
+  - Yeni personel ekleme
+  - Personel bilgilerini güncelleme
+  - Personel silme
+- **🛡️ Yetki Bazlı Admin Yönetimi:** Super Admin yeni yöneticiler ekleyebilir veya mevcutları silebilir.
+- **📊 Devam Takibi ve Raporlama:**
+  - Giriş kayıtlarını tarih ve saate göre görüntüleme
+  - Yoklama verilerini `.csv` formatında dışa aktarma
+  - Günlük yoklama raporunu tüm yöneticilere e-posta ile gönderme
 
-Personel Yönetimi: Yeni personel kayıtları ekleme, mevcut personel bilgilerini (ad, soyad, departman, e-posta, telefon, profil fotoğrafı) güncelleme ve silme.
+### 👤 Personel Arayüzü
+- **🔐 E-posta ile İki Aşamalı Giriş:** Personel, sisteme kayıtlı bilgilerle giriş yaptıktan sonra e-posta ile gelen 6 haneli kodla doğrulama yapar.
+- **✅ Tek Tıkla Yoklama:** Başarılı doğrulama sonrası "İŞE GELDİM" butonu ile devam kaydı yapılır.
+- **💖 Motivasyon Ekranı:** Her başarılı girişte kullanıcıya pozitif karşılama mesajı ve motivasyonel bir söz gösterilir.
 
-Yoklama Takibi: Tüm personel için yoklama kayıtlarını tarih ve saat detaylarıyla görüntüleme.
+---
 
-Raporlama:
+## 🛠️ Kullanılan Teknolojiler
 
-Yoklama listesini Excel dosyası olarak indirme.
+| Kategori         | Kullanılanlar                                                                 |
+|------------------|-------------------------------------------------------------------------------|
+| Backend          | Python (Flask Framework)                                                      |
+| Veritabanı       | SQLite3                                                                       |
+| Önyüz            | HTML5, CSS3, Bootstrap 5.3, Bootstrap Icons                                   |
+| Şifreleme        | `werkzeug.security` (Parola hashleme için)                                    |
+| E-posta Entegrasyonu | Flask-Mail (Doğrulama kodları ve rapor gönderimi için)                 |
+| CSV Dışa Aktarım | `csv` modülü                                                                  |
 
-Günlük yoklama raporunu e-posta ile gönderme.
+---
 
-Personel Paneli
-Güvenli Personel Girişi: Ad, soyad ve e-posta ile giriş yaparak e-posta adresine gönderilen doğrulama kodu ile kimlik doğrulama.
+## 📦 Kurulum ve Çalıştırma
 
-Profil Görüntüleme: Kendi personel bilgilerini (ad, soyad, e-posta, departman, telefon, son giriş tarihi/saati) ve giriş geçmişini görüntüleme.
+### 🧰 Gereksinimler
 
-Profil Güncelleme: Vesikalık fotoğraf yükleyerek profilini güncelleme.
+- Python 3.x
+- pip (Python paket yöneticisi)
 
-Yoklama İşlemi: Tek tıklama ile işe giriş/çıkış kaydı oluşturma. Sistem, aynı gün içinde birden fazla giriş yapılmasını engeller.
+---
 
-Kullanılan Teknolojiler
-Backend: Python (Flask Framework)
+##  📥 1. Projeyi Klonlayın
 
-Veritabanı: SQLite3
-
-Önyüz: HTML5, CSS3, Bootstrap 5.3, Bootstrap Icons
-
-Şifreleme: werkzeug.security (Parola hashleme için)
-
-E-posta Entegrasyonu: Flask-Mail (Doğrulama kodları ve rapor gönderimi için)
-
-Veri Dışa Aktarımı: csv modülü (Excel uyumlu CSV oluşturma için)
-
-Kurulum ve Çalıştırma
-Önkoşullar
-Python 3.x
-
-pip (Python paket yöneticisi)
-
-Adımlar
-Projeyi Klonlayın:
-
-Bash
-
+```bash
 git clone <proje-repo-adresi>
-cd personel-bilgi-sistemi
-Sanal Ortam Oluşturun ve Aktif Edin (Önerilir):
+cd PersonelGirişTakipSistemi
+````
 
-Bash
-
+## 2. Sanal Ortam Oluşturun ve Aktif Edin
+```bash
+Windows:
 python -m venv venv
-# Windows
 .\venv\Scripts\activate
-# macOS/Linux
+
+macOS/Linux:
+
+python3 -m venv venv
 source venv/bin/activate
-Gerekli Kütüphaneleri Yükleyin:
+````
 
-Bash
 
-pip install Flask Flask-Mail Werkzeug
-Veritabanını Oluşturun:
-Projenin temel veritabanı yapısını ve başlangıç admin verisini oluşturmak için veritabani_olustur.py ve ardından tablo_duzelt.py veya tablo_guncelle.py dosyalarını çalıştırın.
+## 📦 3. Gerekli Kütüphaneleri Yükleyin
+```bash
+pip kullanarak projede kullanılan Python kütüphanelerini yükleyin:
 
-Bash
+pip install Flask Flask-Mail requests
+````
 
+## 4️⃣ Veritabanını Oluşturun
+```bash
+veritabani_olustur.py script'ini çalıştırarak personel.db dosyasını ve gerekli tabloları oluşturun. Bu script, aynı zamanda varsayılan yönetici hesabını da oluşturur.
 python veritabani_olustur.py
-python tablo_guncelle.py # veya python tablo_duzelt.py
-Not: tablo_duzelt.py aynı zamanda varsayılan admin kullanıcısını (admin / 1234) sıfırlar ve e-postasını günceller. tablo_guncelle.py ise sadece eksik sütunları ekler.
+python tablo_guncelle.py  # veya tablo_duzelt.py
+Not: tablo_duzelt.py varsayılan admin (admin / 1234) hesabını sıfırlar ve e-posta alanını ekler. 
+````
 
-E-posta Ayarlarını Yapılandırın:
-app.py dosyasında mail ayarlarını kendi Gmail hesabınızın uygulama şifresi ile güncelleyin.
-
-Python
-
+## 📨 5. E-posta Ayarlarını Yapılandırın
+```bash
+app.py dosyasında aşağıdaki satırları kendi Gmail hesabınıza göre güncelleyin:
 app.config['MAIL_USERNAME'] = 'sizin_gmail_adresiniz@gmail.com'
-app.config['MAIL_PASSWORD'] = 'sizin_uygulama_sifreniz' # Gmail Uygulama Şifresi
-Not: Gmail için uygulama şifresi oluşturmanız gerekebilir. Google Destek sayfasından bilgi alabilirsiniz.
-
-Uygulamayı Çalıştırın:
-
-Bash
-
+app.config['MAIL_PASSWORD'] = 'sizin_uygulama_sifreniz'  # Gmail Uygulama Şifresi
+````
+## ▶️ 6. Uygulamayı Başlatın
+```bash
 python app.py
-Tarayıcınızda Açın:
-Uygulama varsayılan olarak http://127.0.0.1:5000/ adresinde çalışacaktır.
+```
 
-Kullanım
-Uygulamayı başlattıktan sonra ana sayfa sizi giriş türü seçimine yönlendirecektir: Personel Girişi veya Admin Girişi.
+## 🌐 7. Tarayıcıda Açın
+```bash
+Uygulama şu adreste çalışacaktır:
+http://127.00.1:5000/
+```
 
-Admin Girişi için varsayılan kullanıcı adı admin ve şifre 1234'tür (eğer tablo_duzelt.py çalıştırıldıysa).
 
-Personel Girişi için sisteme kayıtlı bir personelin ad, soyad ve e-posta bilgilerini girerek mailinize gelen doğrulama kodunu kullanmanız gerekmektedir.
+📚 Kullanım
+```bash
+Uygulama başlatıldıktan sonra ana sayfa, giriş türü seçmenizi ister: Personel Girişi veya Admin Girişi .
+Admin Girişi: Varsayılan kullanıcı adı admin, şifre 1234 (eğer tablo_duzelt.py çalıştırıldıysa).
+Personel Girişi: Sisteme kayıtlı bir personelin ad, soyad ve e-posta bilgileri ile giriş yapabilir. Doğrulama için e-postasına gönderilen 6 haneli kodu girmelidir.
+```
 
-Veritabanı Şeması
-Proje, personel.db SQLite veritabanında aşağıdaki tabloları kullanır:
+📧 İletişim
+```bash
+Herhangi bir sorunuz veya geri bildiriminiz varsa, GitHub Issues üzerinden bize ulaşabilirsiniz.
+```
 
-admin Tablosu
-Sütun Adı	Türü	Açıklama
-id	INTEGER	Birincil Anahtar, Otomatik Artan
-username	TEXT	Yönetici kullanıcı adı (Benzersiz)
-password	TEXT	Hashlenmiş parola
-email	TEXT	Yönetici e-posta adresi
 
-E-Tablolar'a aktar
-personel Tablosu
-Sütun Adı	Türü	Açıklama
-id	INTEGER	Birincil Anahtar, Otomatik Artan
-ad	TEXT	Personelin adı
-soyad	TEXT	Personelin soyadı
-departman	TEXT	Personelin departmanı
-email	TEXT	Personelin e-posta adresi (Benzersiz)
-telefon	TEXT	Personelin telefon numarası
-son_giris_tarihi	TEXT	Son giriş yaptığı tarih
-son_giris_saati	TEXT	Son giriş yaptığı saat
-profil_foto	TEXT	Profil fotoğrafının dosya yolu
 
-E-Tablolar'a aktar
-yoklama Tablosu
-Sütun Adı	Türü	Açıklama
-id	INTEGER	Birincil Anahtar, Otomatik Artan
-email	TEXT	Giriş yapan personelin e-postası
-tarih	TEXT	Giriş tarihi
-saat	TEXT	Giriş saati
 
-E-Tablolar'a aktar
 
 
 

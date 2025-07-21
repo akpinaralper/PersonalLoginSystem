@@ -121,10 +121,11 @@ Herhangi bir sorunuz veya geri bildiriminiz varsa, GitHub Issues üzerinden bize
 Katkılar her zaman açıktır! Yeni özellikler eklemek, hataları düzeltmek veya performansı artırmak için çekme istekleri (Pull Request) göndermekten çekinmeyin.
 ```
 
-
-🚀 Hazırlayan: [Alper Akpınar]
+```bash
+🚀 Hazırlayan: [Alper Akpınar] 
 🏢 Proje Versiyonu: 1.0.0
-📅 İlk Yayın Tarihi: 2025 
+📅 İlk Yayın Tarihi: 2025
+```
 
 
 

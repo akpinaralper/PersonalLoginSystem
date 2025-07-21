@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Personel Giriş</title>
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        body {
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            background: #f4f6f8; /* Soft açık gri arka plan */
+            position: relative;
+            overflow: hidden;
+        }
+        .logo-bg {
+            position: absolute;
+            top: 7%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 320px; /* Daha büyük logo */
+            height: auto;
+            opacity: 0.22;
+            z-index: 0;
+            pointer-events: none;
+        }
+        .container {
+            position: relative;
+            z-index: 1;
+        }
+        .login-card {
+            border-radius: 18px;
+            box-shadow: 0 4px 24px 0 rgba(13,110,253,0.10);
+            margin-top: 300px; /* Formu logonun altına alır */
+            background: rgba(255,255,255,0.97);
+        }
+        .form-icon {
+            width: 1.5em;
+            height: 1.5em;
+            color: #0d6efd;
+            margin-right: 8px;
+        }
+    </style>
+</head>
+<body>
+    <img src="{{ url_for('static', filename='gen-era_logo.png') }}" alt="Gen-Era Logo" class="logo-bg">
+    <div class="container d-flex align-items-center justify-content-center" style="min-height: 100vh;">
+        <div class="col-md-6 col-lg-5">
+            <div class="card login-card p-4">
+                <div class="card-header bg-white border-0 text-center pb-0">
+                    <h3 class="fw-bold text-primary mb-2">
+                        <i class="bi bi-person-badge form-icon"></i> Personel Giriş
+                    </h3>
+                </div>
+                <div class="card-body">
+                    {% with messages = get_flashed_messages() %}
+                      {% if messages %}
+                        <div class="alert alert-danger">
+                          {{ messages[0] }}
+                        </div>
+                      {% endif %}
+                    {% endwith %}
+                    <form method="POST" autocomplete="off">
+                        <div class="mb-3">
+                            <label for="ad" class="form-label">
+                                <i class="bi bi-person form-icon"></i>Ad
+                            </label>
+                            <input type="text" class="form-control" id="ad" name="ad" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="soyad" class="form-label">
+                                <i class="bi bi-person form-icon"></i>Soyad
+                            </label>
+                            <input type="text" class="form-control" id="soyad" name="soyad" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">
+                                <i class="bi bi-envelope form-icon"></i>E-posta
+                            </label>
+                            <input type="email" class="form-control" id="email" name="email" required autocomplete="off">
+                        </div>
+                        <button type="submit" class="btn btn-success w-100 mt-3">
+                            <i class="bi bi-send"></i> Kod Gönder
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

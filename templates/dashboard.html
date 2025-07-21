@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Yönetim Paneli</title>
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .dashboard-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            margin: 20px 0;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        
+        .dashboard-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 18px;
+            border: none;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+        
+        .card-header {
+            border-bottom: 2px solid #e9ecef;
+            border-radius: 18px 18px 0 0 !important;
+            padding: 20px 25px;
+            font-weight: 600;
+        }
+        
+        .card-body {
+            padding: 25px;
+        }
+        
+        /* Scrollbar Stili */
+        .table-container {
+            max-height: 400px;
+            overflow-y: auto;
+            border-radius: 10px;
+            border: 1px solid #e9ecef;
+        }
+        
+        .table-container::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .table-container::-webkit-scrollbar-track {
+            background: #f1f3f4;
+            border-radius: 10px;
+        }
+        
+        .table-container::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 10px;
+        }
+        
+        .table-container::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #5a6fd8, #6a42a0);
+        }
+        
+        /* Tablo Stilleri */
+        .table {
+            margin-bottom: 0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .table thead th {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            font-weight: 600;
+            text-align: center;
+            padding: 15px 10px;
+            font-size: 0.9rem;
+        }
+        
+        .table tbody tr:hover {
+            background-color: rgba(102, 126, 234, 0.1);
+            transform: scale(1.01);
+            transition: all 0.2s ease;
+        }
+        
+        .table td {
+            vertical-align: middle;
+            padding: 12px 8px;
+            border-color: #e9ecef;
+            text-align: center;
+        }
+        
+        /* Buton Stilleri */
+        .btn-modern {
+            border-radius: 25px;
+            padding: 8px 16px;
+            font-weight: 600;
+            border: none;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.85rem;
+        }
+        
+        .btn-update {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+        }
+        
+        .btn-update:hover {
+            background: linear-gradient(135deg, #218838, #1ea08d);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+        }
+        
+        .btn-delete {
+            background: linear-gradient(135deg, #dc3545, #e55564);
+            color: white;
+        }
+        
+        .btn-delete:hover {
+            background: linear-gradient(135deg, #c82333, #d14251);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(220, 53, 69, 0.4);
+        }
+        
+        .btn-primary-modern {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+        }
+        
+        .btn-primary-modern:hover {
+            background: linear-gradient(135deg, #0056b3, #004085);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 123, 255, 0.4);
+        }
+        
+        .btn-info-modern {
+            background: linear-gradient(135deg, #17a2b8, #138496);
+            color: white;
+        }
+        
+        .btn-info-modern:hover {
+            background: linear-gradient(135deg, #138496, #0f6674);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(23, 162, 184, 0.4);
+        }
+        
+        /* Header Butonları */
+        .header-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            padding: 12px 24px;
+            font-weight: 600;
+            margin: 0 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .header-btn:hover {
+            background: linear-gradient(135deg, #5a6fd8, #6a42a0);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        /* Badge Stilleri */
+        .badge-super {
+            background: linear-gradient(135deg, #dc3545, #e55564);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 15px;
+            font-size: 0.75rem;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .table-container {
+                max-height: 300px;
+            }
+            
+            .btn-modern {
+                padding: 6px 12px;
+                font-size: 0.8rem;
+            }
+            
+            .card-body {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid py-4">
+        <!-- Header -->
+        <div class="dashboard-header">
+            <div class="d-flex justify-content-between align-items-center flex-wrap">
+                <div>
+                    <h2 class="mb-1">
+                        <i class="bi bi-speedometer2" style="color: #667eea;"></i>
+                        Yönetim Paneli
+                    </h2>
+                    <p class="text-muted mb-0">
+                        Hoş geldiniz, <strong>{{ session.get('username') }}</strong>
+                        {% if session.get('is_super_admin') %}
+                            <span class="badge-super">Super Admin</span>
+                        {% endif %}
+                    </p>
+                </div>
+                <div class="d-flex flex-wrap">
+                    <a href="{{ url_for('add_personel') }}" class="header-btn">
+                        <i class="bi bi-person-plus"></i> Personel Ekle
+                    </a>
+                    {% if session.get('is_super_admin') %}
+                    <a href="{{ url_for('add_admin') }}" class="header-btn">
+                        <i class="bi bi-shield-plus"></i> Admin Ekle
+                    </a>
+                    {% endif %}
+                    <a href="{{ url_for('yoklama') }}" class="header-btn">
+                        <i class="bi bi-list-check"></i> Yoklama
+                    </a>
+                    <a href="{{ url_for('logout') }}" class="header-btn">
+                        <i class="bi bi-box-arrow-right"></i> Çıkış
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Personel Listesi -->
+            <div class="col-lg-8 mb-4">
+                <div class="card dashboard-card">
+                    <div class="card-header" style="background: linear-gradient(135deg, #28a745, #20c997); color: white;">
+                        <h5 class="mb-0">
+                            <i class="bi bi-people"></i> Personel Listesi
+                            <span class="badge bg-light text-dark ms-2">{{ personeller|length }} kişi</span>
+                        </h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-container">
+                            <table class="table table-hover mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Ad Soyad</th>
+                                        <th>Departman</th>
+                                        <th>E-posta</th>
+                                        <th>Telefon</th>
+                                        <th>İşlemler</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for personel in personeller %}
+                                    <tr>
+                                        <td><strong>{{ personel['id'] }}</strong></td>
+                                        <td>
+                                            <strong>{{ personel['ad'] }} {{ personel['soyad'] }}</strong>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-info">{{ personel['departman'] }}</span>
+                                        </td>
+                                        <td>{{ personel['email'] }}</td>
+                                        <td>{{ personel['telefon'] }}</td>
+                                        <td>
+                                            <a href="{{ url_for('update_personel', id=personel['id']) }}" 
+                                               class="btn btn-modern btn-update btn-sm">
+                                                <i class="bi bi-pencil"></i> Güncelle
+                                            </a>
+                                            <a href="{{ url_for('delete_personel', id=personel['id']) }}" 
+                                               class="btn btn-modern btn-delete btn-sm"
+                                               onclick="return confirm('{{ personel['ad'] }} {{ personel['soyad'] }} adlı personeli silmek istediğinizden emin misiniz?')">
+                                                <i class="bi bi-trash"></i> Sil
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin Listesi ve Diğer İşlemler -->
+            <div class="col-lg-4">
+                <!-- Admin Listesi -->
+                <div class="card dashboard-card mb-4">
+                    <div class="card-header" style="background: linear-gradient(135deg, #dc3545, #e55564); color: white;">
+                        <h5 class="mb-0">
+                            <i class="bi bi-shield-check"></i> Admin Listesi
+                            <span class="badge bg-light text-dark ms-2">{{ adminler|length }}</span>
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-container" style="max-height: 250px;">
+                            <table class="table table-sm mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Kullanıcı</th>
+                                        <th>İşlemler</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for admin in adminler %}
+                                    <tr>
+                                        <td>
+                                            <div>
+                                                <strong>{{ admin['username'] }}</strong>
+                                                {% if admin['username'] == 'admin' %}
+                                                    <br><span class="badge-super">Super Admin</span>
+                                                {% endif %}
+                                                <br><small class="text-muted">{{ admin['email'] }}</small>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <a href="{{ url_for('update_admin', id=admin['id']) }}" 
+                                               class="btn btn-modern btn-update btn-sm mb-1">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            {% if session.get('is_super_admin') and admin['username'] != session.get('username') %}
+                                            <a href="{{ url_for('delete_admin', id=admin['id']) }}" 
+                                               class="btn btn-modern btn-delete btn-sm"
+                                               onclick="return confirm('{{ admin['username'] }} adlı admini silmek istediğinizden emin misiniz?')">
+                                                <i class="bi bi-trash"></i>
+                                            </a>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hızlı İşlemler -->
+                <div class="card dashboard-card">
+                    <div class="card-header" style="background: linear-gradient(135deg, #17a2b8, #138496); color: white;">
+                        <h5 class="mb-0">
+                            <i class="bi bi-lightning"></i> Hızlı İşlemler
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <a href="{{ url_for('yoklama_excel') }}" class="btn btn-modern btn-primary-modern">
+                                <i class="bi bi-file-earmark-excel"></i> Excel İndir
+                            </a>
+                            <a href="{{ url_for('gunluk_rapor_gonder') }}" class="btn btn-modern btn-info-modern">
+                                <i class="bi bi-envelope"></i> Rapor Gönder
+                            </a>
+                        </div>
+                        
+                        <!-- İstatistikler -->
+                        <div class="mt-4">
+                            <h6 class="text-muted">Bugünkü İstatistikler</h6>
+                            <div class="row text-center">
+                                <div class="col-6">
+                                    <div class="p-2 bg-light rounded">
+                                        <h4 class="text-success">{{ personeller|length }}</h4>
+                                        <small>Personel</small>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="p-2 bg-light rounded">
+                                        <h4 class="text-info">{{ adminler|length }}</h4>
+                                        <small>Admin</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Flash mesajları -->
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 9999;">
+                {% for message in messages %}
+                <div class="toast show" role="alert">
+                    <div class="toast-header">
+                        <strong class="me-auto">Bildirim</strong>
+                        <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+                    </div>
+                    <div class="toast-body">{{ message }}</div>
+                </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

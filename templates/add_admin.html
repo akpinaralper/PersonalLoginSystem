@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Ekle</title>
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
+            min-height: 100vh;
+        }
+        .admin-card {
+            max-width: 420px;
+            margin: 80px auto;
+            border-radius: 18px;
+            box-shadow: 0 4px 24px 0 rgba(13,110,253,0.10);
+            background: #fff;
+        }
+        .form-icon {
+            font-size: 2.5rem;
+            color: #0d6efd;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-card p-4">
+        <div class="text-center">
+            <div class="form-icon">
+                <i class="bi bi-person-plus-fill"></i>
+            </div>
+            <h3 class="mb-4 text-primary fw-bold">Yeni Admin Ekle</h3>
+        </div>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% for category, message in messages %}
+            <div class="alert alert-{{ 'danger' if category == 'danger' else 'success' }}">{{ message }}</div>
+          {% endfor %}
+        {% endwith %}
+        <form method="POST" autocomplete="off">
+            <div class="mb-3">
+                <label for="username" class="form-label">Kullanıcı Adı</label>
+                <input type="text" class="form-control" id="username" name="username" required placeholder="Kullanıcı adı">
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label">Şifre</label>
+                <input type="password" class="form-control" id="password" name="password" required placeholder="Şifre">
+            </div>
+            <div class="mb-3">
+                <label for="email" class="form-label">E-posta</label>
+                <input type="email" class="form-control" id="email" name="email" required placeholder="E-posta adresi">
+            </div>
+            <button type="submit" class="btn btn-primary w-100 fw-bold">
+                <i class="bi bi-person-plus"></i> Admin Ekle
+            </button>
+        </form>
+    </div>
+</body>
+</html>

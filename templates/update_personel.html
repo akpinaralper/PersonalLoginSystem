@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Personel Güncelle</title>
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .update-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .update-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: none;
+            max-width: 600px;
+            width: 100%;
+            animation: slideIn 0.6s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .card-header {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            border-radius: 20px 20px 0 0 !important;
+            border: none;
+            padding: 25px;
+            text-align: center;
+        }
+        
+        .card-body {
+            padding: 30px;
+        }
+        
+        .form-label {
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .form-icon {
+            width: 1.2em;
+            height: 1.2em;
+            color: #667eea;
+            margin-right: 10px;
+        }
+        
+        .form-control {
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 12px 15px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.8);
+        }
+        
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+            background: rgba(255, 255, 255, 1);
+            transform: translateY(-2px);
+        }
+        
+        .form-control:hover {
+            border-color: #b8c5ea;
+        }
+        
+        .btn-custom {
+            min-width: 140px;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+        }
+        
+        .btn-back {
+            background: linear-gradient(135deg, #6c757d, #5a6268);
+            color: white;
+        }
+        
+        .btn-back:hover {
+            background: linear-gradient(135deg, #5a6268, #495057);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(108, 117, 125, 0.4);
+        }
+        
+        .btn-update {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+        }
+        
+        .btn-update:hover {
+            background: linear-gradient(135deg, #20c997, #17a2b8);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+        }
+        
+        .alert {
+            border-radius: 15px;
+            border: none;
+            padding: 15px 20px;
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .email-warning {
+            background: rgba(255, 193, 7, 0.1);
+            border: 1px solid #ffc107;
+            border-radius: 10px;
+            padding: 8px 12px;
+            margin-top: 5px;
+            font-size: 0.85rem;
+            color: #856404;
+        }
+        
+        /* Responsive */
+        @media (max-width: 576px) {
+            .card-body {
+                padding: 20px;
+            }
+            
+            .btn-custom {
+                min-width: 120px;
+                padding: 10px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="update-container">
+        <div class="update-card">
+            <div class="card-header">
+                <h3 class="mb-0">
+                    <i class="bi bi-pencil-square me-2"></i>
+                    Personel Güncelle
+                </h3>
+                <p class="mb-0 mt-2 opacity-75">
+                    {{ personel['ad'] }} {{ personel['soyad'] }} bilgilerini düzenleyin
+                </p>
+            </div>
+            
+            <div class="card-body">
+                {% with messages = get_flashed_messages() %}
+                  {% if messages %}
+                    <div class="alert alert-danger mb-4">
+                        <i class="bi bi-exclamation-triangle me-2"></i>
+                        {{ messages[0] }}
+                    </div>
+                  {% endif %}
+                {% endwith %}
+                
+                <form method="POST" autocomplete="off">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="ad" class="form-label">
+                                <i class="bi bi-person form-icon"></i>Ad
+                            </label>
+                            <input type="text" class="form-control" id="ad" name="ad" 
+                                   value="{{ personel['ad'] }}" required>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="soyad" class="form-label">
+                                <i class="bi bi-person form-icon"></i>Soyad
+                            </label>
+                            <input type="text" class="form-control" id="soyad" name="soyad" 
+                                   value="{{ personel['soyad'] }}" required>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="departman" class="form-label">
+                            <i class="bi bi-diagram-3 form-icon"></i>Departman
+                        </label>
+                        <input type="text" class="form-control" id="departman" name="departman" 
+                               value="{{ personel['departman'] }}" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="email" class="form-label">
+                            <i class="bi bi-envelope form-icon"></i>E-posta
+                        </label>
+                        <input type="email" class="form-control" id="email" name="email" 
+                               value="{{ personel['email'] }}" required>
+                        <div class="email-warning">
+                            <i class="bi bi-info-circle me-1"></i>
+                            E-posta adresi değiştirildikten sonra personel yeni e-posta ile giriş yapacak.
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="telefon" class="form-label">
+                            <i class="bi bi-telephone form-icon"></i>Telefon
+                        </label>
+                        <input type="text" class="form-control" id="telefon" name="telefon" 
+                               maxlength="11" pattern="\d{11}" placeholder="05xxxxxxxxx"
+                               value="{{ personel['telefon'] }}" required>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between align-items-center">
+                        <a href="{{ url_for('dashboard') }}" class="btn btn-back btn-custom">
+                            <i class="bi bi-arrow-left me-1"></i> Geri Dön
+                        </a>
+                        <button type="submit" class="btn btn-update btn-custom">
+                            <i class="bi bi-check-circle me-1"></i> Güncelle
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sadece rakam girilmesini sağlar (Telefon)
+        document.getElementById('telefon').addEventListener('input', function (e) {
+            let value = this.value.replace(/\D/g, '');
+            
+            // 11 haneli telefon formatı
+            if (value.length > 11) {
+                value = value.slice(0, 11);
+            }
+            
+            this.value = value;
+            
+            // Renk değişimi (Validasyon)
+            if (value.length === 11 && value.startsWith('05')) {
+                this.style.borderColor = '#28a745';
+                this.style.boxShadow = '0 0 0 0.2rem rgba(40, 167, 69, 0.25)';
+            } else if (value.length > 0) {
+                this.style.borderColor = '#dc3545';
+                this.style.boxShadow = '0 0 0 0.2rem rgba(220, 53, 69, 0.25)';
+            } else {
+                this.style.borderColor = '#e9ecef';
+                this.style.boxShadow = 'none';
+            }
+        });
+        
+        // E-posta validasyonu
+        document.getElementById('email').addEventListener('input', function (e) {
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (emailPattern.test(this.value)) {
+                this.style.borderColor = '#28a745';
+                this.style.boxShadow = '0 0 0 0.2rem rgba(40, 167, 69, 0.25)';
+            } else if (this.value.length > 0) {
+                this.style.borderColor = '#dc3545';
+                this.style.boxShadow = '0 0 0 0.2rem rgba(220, 53, 69, 0.25)';
+            }
+        });
+        
+        // Form gönderim kontrolü
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const telefon = document.getElementById('telefon').value;
+            const email = document.getElementById('email').value;
+            
+            if (telefon.length !== 11 || !telefon.startsWith('05')) {
+                e.preventDefault();
+                alert('Lütfen geçerli bir telefon numarası girin (05xxxxxxxxx)');
+                return;
+            }
+            
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailPattern.test(email)) {
+                e.preventDefault();
+                alert('Lütfen geçerli bir e-posta adresi girin');
+                return;
+            }
+        });
+    </script>
+</body>
+</html>

@@ -116,8 +116,10 @@ Personel Girişi: Sisteme kayıtlı bir personelin ad, soyad ve e-posta bilgiler
 ```bash
 Herhangi bir sorunuz veya geri bildiriminiz varsa, GitHub Issues üzerinden bize ulaşabilirsiniz.
 ```
-
-
+🙌 Katkıda Bulunmak
+```bash
+Katkılar her zaman açıktır! Yeni özellikler eklemek, hataları düzeltmek veya performansı artırmak için çekme istekleri (Pull Request) göndermekten çekinmeyin.
+```
 
 
 

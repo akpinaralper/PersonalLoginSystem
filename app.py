@@ -340,25 +340,122 @@ def yoklama_excel():
 def gunluk_rapor_gonder():
     if not session.get('logged_in'):
         return redirect(url_for('login'))
-    gunluk_rapor_mail()
-    flash('Günlük raporlar başarıyla gönderildi!')
+    
+    # Rapor gönderimini kontrol et
+    sonuc = gunluk_rapor_mail()
+    
+    if sonuc:
+        flash('Günlük raporlar başarıyla gönderildi! 📧✅')
+    else:
+        flash('Rapor gönderiminde hata oluştu! ❌')
+    
     return redirect(url_for('dashboard'))
 
 def gunluk_rapor_mail():
     conn = get_db_connection()
-    admins = conn.execute('SELECT email FROM admin').fetchall()
-    yoklamalar = conn.execute('SELECT * FROM yoklama WHERE tarih = ?', (datetime.now().strftime('%Y-%m-%d'),)).fetchall()
+    # Tüm adminlerin e-postalarını al
+    admins = conn.execute('SELECT email FROM admin WHERE email IS NOT NULL AND email != ""').fetchall()
+    
+    # Bugünkü tarihi al
+    bugun = datetime.now().strftime('%Y-%m-%d')
+    
+    # Bugünkü yoklamaları al
+    yoklamalar = conn.execute('''
+        SELECT y.email, y.tarih, y.saat, p.ad, p.soyad, p.departman 
+        FROM yoklama y
+        LEFT JOIN personel p ON y.email = p.email
+        WHERE y.tarih = ?
+        ORDER BY y.saat
+    ''', (bugun,)).fetchall()
+    
+    # Toplam personel sayısı
+    toplam_personel = conn.execute('SELECT COUNT(*) as total FROM personel').fetchone()
     conn.close()
-    rapor = "Bugünkü Yoklama:\n\n"
-    for y in yoklamalar:
-        rapor += f"{y['email']} - {y['tarih']} {y['saat']}\n"
+    
+    # Rapor içeriği hazırla
+    rapor = f"""
+📊 GÜNLÜK YOKLAMA RAPORU
+📅 Tarih: {bugun}
+⏰ Rapor Saati: {datetime.now().strftime('%H:%M:%S')}
+
+📈 ÖZET BİLGİLER:
+• Toplam Personel: {toplam_personel['total']}
+• Bugün Gelen: {len(yoklamalar)}
+• Gelmeyenler: {toplam_personel['total'] - len(yoklamalar)}
+• Katılım Oranı: %{round((len(yoklamalar) / toplam_personel['total']) * 100, 1) if toplam_personel['total'] > 0 else 0}
+
+{'='*50}
+
+📋 BUGÜN GELEN PERSONELLER:
+"""
+    
+    if yoklamalar:
+        for y in yoklamalar:
+            ad_soyad = f"{y['ad']} {y['soyad']}" if y['ad'] and y['soyad'] else "Bilinmeyen Personel"
+            departman = y['departman'] if y['departman'] else "Belirtilmemiş"
+            rapor += f"""
+👤 {ad_soyad}
+📧 {y['email']}
+🏢 {departman}
+⏰ Giriş Saati: {y['saat']}
+"""
+    else:
+        rapor += "\n❌ Bugün hiçbir personel işe gelmedi.\n"
+    
+    # Gelmeyen personelleri bul
+    rapor += f"\n{'='*50}\n\n❌ BUGÜN GELMEYENLERİ:"
+    
+    conn = get_db_connection()
+    gelmeyenler = conn.execute('''
+        SELECT p.ad, p.soyad, p.email, p.departman
+        FROM personel p
+        WHERE p.email NOT IN (
+            SELECT y.email FROM yoklama y WHERE y.tarih = ?
+        )
+    ''', (bugun,)).fetchall()
+    conn.close()
+    
+    if gelmeyenler:
+        for g in gelmeyenler:
+            ad_soyad = f"{g['ad']} {g['soyad']}"
+            departman = g['departman'] if g['departman'] else "Belirtilmemiş"
+            rapor += f"""
+👤 {ad_soyad}
+📧 {g['email']}
+🏢 {departman}
+"""
+    else:
+        rapor += "\n✅ Tüm personel bugün işe geldi! 🎉\n"
+    
+    rapor += f"""
+{'='*50}
+
+Bu rapor otomatik olarak sistem tarafından oluşturulmuştur.
+🕐 Son güncelleme: {datetime.now().strftime('%d.%m.%Y %H:%M:%S')}
+
+İyi günler dileriz! 😊
+"""
+    
+    # Admin e-postalarını hazırla
     admin_emails = [a['email'] for a in admins if a['email']]
-    msg = Message(
-        subject='Günlük Yoklama Raporu',
-        recipients=admin_emails,
-        body=rapor
-    )
-    mail.send(msg)
+    
+    if not admin_emails:
+        print("❌ Gönderilecek admin e-postası bulunamadı!")
+        return False
+    
+    try:
+        # Mail gönder
+        msg = Message(
+            subject=f'📊 Günlük Yoklama Raporu - {bugun}',
+            recipients=admin_emails,
+            body=rapor
+        )
+        mail.send(msg)
+        print(f"✅ Rapor başarıyla gönderildi: {admin_emails}")
+        return True
+    except Exception as e:
+        print(f"❌ Mail gönderme hatası: {e}")
+        return False
 
 @app.route('/add_admin', methods=['GET', 'POST'])
 def add_admin():
@@ -519,6 +616,425 @@ def update_admin(id):
     
     conn.close()
     return render_template('update_admin.html', admin=admin)
+
+# Debug için rapor önizleme (geliştirme aşamasında kullan)
+@app.route('/rapor_preview')
+def rapor_preview():
+    if not session.get('logged_in'):
+        return redirect(url_for('login'))
+    
+    conn = get_db_connection()
+    bugun = datetime.now().strftime('%Y-%m-%d')
+    bugun_tr = datetime.now().strftime('%d.%m.%Y')
+    
+    # Personel ID'si de dahil edilecek şekilde sorgu
+    yoklamalar = conn.execute('''
+        SELECT y.email, y.tarih, y.saat, p.id, p.ad, p.soyad, p.departman 
+        FROM yoklama y
+        LEFT JOIN personel p ON y.email = p.email
+        WHERE y.tarih = ?
+        ORDER BY y.saat
+    ''', (bugun,)).fetchall()
+    
+    toplam_personel = conn.execute('SELECT COUNT(*) as total FROM personel').fetchone()
+    
+    # Gelmeyen personelleri bul (ID dahil)
+    gelmeyenler = conn.execute('''
+        SELECT p.id, p.ad, p.soyad, p.email, p.departman
+        FROM personel p
+        WHERE p.email NOT IN (
+            SELECT y.email FROM yoklama y WHERE y.tarih = ?
+        )
+    ''', (bugun,)).fetchall()
+    conn.close()
+    
+    katilim_orani = round((len(yoklamalar) / toplam_personel['total']) * 100, 1) if toplam_personel['total'] > 0 else 0
+    
+    # Modern HTML rapor sayfası
+    html_rapor = f"""
+    <!DOCTYPE html>
+    <html lang="tr">
+    <head>
+        <meta charset="UTF-8">
+        <title>Rapor Önizleme</title>
+        <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+        <style>
+            body {{
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                min-height: 100vh;
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                padding: 20px 0;
+            }}
+            
+            .report-container {{
+                background: rgba(255, 255, 255, 0.95);
+                border-radius: 20px;
+                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+                backdrop-filter: blur(10px);
+                margin: 20px auto;
+                max-width: 1000px;
+                overflow: hidden;
+                animation: slideIn 0.6s ease-out;
+            }}
+            
+            @keyframes slideIn {{
+                from {{ opacity: 0; transform: translateY(-30px); }}
+                to {{ opacity: 1; transform: translateY(0); }}
+            }}
+            
+            .report-header {{
+                background: linear-gradient(135deg, #28a745, #20c997);
+                color: white;
+                padding: 30px;
+                text-align: center;
+            }}
+            
+            .report-title {{
+                font-size: 2.5rem;
+                font-weight: bold;
+                margin-bottom: 10px;
+            }}
+            
+            .report-date {{
+                font-size: 1.2rem;
+                opacity: 0.9;
+            }}
+            
+            .stats-row {{
+                background: #f8f9fa;
+                padding: 30px;
+                border-bottom: 1px solid #e9ecef;
+            }}
+            
+            .stat-card {{
+                background: white;
+                border-radius: 15px;
+                padding: 25px;
+                text-align: center;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+                transition: transform 0.3s ease;
+                height: 100%;
+            }}
+            
+            .stat-card:hover {{
+                transform: translateY(-5px);
+            }}
+            
+            .stat-number {{
+                font-size: 2.5rem;
+                font-weight: bold;
+                margin-bottom: 10px;
+            }}
+            
+            .stat-label {{
+                color: #6c757d;
+                font-size: 1rem;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+            }}
+            
+            .stat-success {{ color: #28a745; }}
+            .stat-primary {{ color: #007bff; }}
+            .stat-warning {{ color: #ffc107; }}
+            .stat-info {{ color: #17a2b8; }}
+            
+            .content-section {{
+                padding: 30px;
+            }}
+            
+            .section-title {{
+                font-size: 1.5rem;
+                font-weight: 600;
+                color: #495057;
+                margin-bottom: 20px;
+                padding-bottom: 10px;
+                border-bottom: 2px solid #e9ecef;
+            }}
+            
+            .personel-card {{
+                background: #f8f9fa;
+                border-left: 4px solid #28a745;
+                border-radius: 8px;
+                padding: 15px;
+                margin-bottom: 10px;
+                transition: all 0.3s ease;
+            }}
+            
+            .personel-card:hover {{
+                background: #e9ecef;
+                transform: translateX(5px);
+            }}
+            
+            .absent-card {{
+                border-left-color: #dc3545;
+                background: #fff5f5;
+            }}
+            
+            .absent-card:hover {{
+                background: #ffe6e6;
+            }}
+            
+            .personel-name {{
+                font-weight: 600;
+                color: #212529;
+                margin-bottom: 5px;
+            }}
+            
+            .personel-info {{
+                color: #6c757d;
+                font-size: 0.9rem;
+            }}
+            
+            .time-badge {{
+                background: #e3f2fd;
+                color: #1976d2;
+                padding: 3px 8px;
+                border-radius: 12px;
+                font-size: 0.85rem;
+                font-weight: 500;
+            }}
+            
+            .dept-badge {{
+                background: #f3e5f5;
+                color: #7b1fa2;
+                padding: 3px 8px;
+                border-radius: 12px;
+                font-size: 0.85rem;
+                font-weight: 500;
+            }}
+            
+            .back-btn {{
+                background: linear-gradient(135deg, #667eea, #764ba2);
+                color: white;
+                border: none;
+                border-radius: 25px;
+                padding: 12px 30px;
+                font-weight: 600;
+                text-decoration: none;
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                transition: all 0.3s ease;
+                margin: 5px;
+            }}
+            
+            .back-btn:hover {{
+                background: linear-gradient(135deg, #5a6fd8, #6a42a0);
+                color: white;
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            }}
+            
+            .btn-edit {{
+                background: linear-gradient(135deg, #28a745, #20c997);
+            }}
+            
+            .btn-edit:hover {{
+                background: linear-gradient(135deg, #20c997, #17a2b8);
+            }}
+            
+            .btn-delete {{
+                background: linear-gradient(135deg, #dc3545, #e55564);
+            }}
+            
+            .btn-delete:hover {{
+                background: linear-gradient(135deg, #c82333, #d14251);
+            }}
+            
+            .no-data {{
+                text-align: center;
+                color: #6c757d;
+                font-style: italic;
+                padding: 40px;
+                background: #f8f9fa;
+                border-radius: 10px;
+                margin: 20px 0;
+            }}
+            
+            .action-buttons {{
+                display: flex;
+                gap: 5px;
+                margin-top: 10px;
+            }}
+            
+            .btn-sm {{
+                padding: 5px 10px;
+                font-size: 0.8rem;
+                border-radius: 15px;
+                text-decoration: none;
+            }}
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="report-container">
+                <!-- Header -->
+                <div class="report-header">
+                    <div class="report-title">
+                        <i class="bi bi-bar-chart-line me-3"></i>
+                        Günlük Yoklama Raporu
+                    </div>
+                    <div class="report-date">
+                        <i class="bi bi-calendar3"></i> {bugun_tr}
+                        <span class="ms-3">
+                            <i class="bi bi-clock"></i> {datetime.now().strftime('%H:%M:%S')}
+                        </span>
+                    </div>
+                </div>
+                
+                <!-- İstatistikler -->
+                <div class="stats-row">
+                    <div class="row g-4">
+                        <div class="col-md-3">
+                            <div class="stat-card">
+                                <div class="stat-number stat-primary">{toplam_personel['total']}</div>
+                                <div class="stat-label">
+                                    <i class="bi bi-people"></i> Toplam Personel
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-card">
+                                <div class="stat-number stat-success">{len(yoklamalar)}</div>
+                                <div class="stat-label">
+                                    <i class="bi bi-check-circle"></i> Bugün Gelen
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-card">
+                                <div class="stat-number stat-warning">{len(gelmeyenler)}</div>
+                                <div class="stat-label">
+                                    <i class="bi bi-x-circle"></i> Gelmeyenler
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-card">
+                                <div class="stat-number stat-info">%{katilim_orani}</div>
+                                <div class="stat-label">
+                                    <i class="bi bi-graph-up"></i> Katılım Oranı
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="content-section">
+                    <div class="row">
+                        <!-- Gelen Personeller -->
+                        <div class="col-lg-6">
+                            <h3 class="section-title">
+                                <i class="bi bi-check-circle-fill text-success"></i>
+                                Bugün Gelen Personeller
+                            </h3>
+    """
+    
+    if yoklamalar:
+        for y in yoklamalar:
+            ad_soyad = f"{y['ad']} {y['soyad']}" if y['ad'] and y['soyad'] else "Bilinmeyen Personel"
+            departman = y['departman'] if y['departman'] else "Belirtilmemiş"
+            personel_id = y['id'] if y['id'] else "#"
+            
+            html_rapor += f"""
+                            <div class="personel-card">
+                                <div class="personel-name">
+                                    <i class="bi bi-person-fill me-2"></i>{ad_soyad}
+                                </div>
+                                <div class="personel-info">
+                                    <span class="dept-badge">{departman}</span>
+                                    <span class="time-badge ms-2">{y['saat']}</span>
+                                    <br><small class="text-muted mt-1 d-block">{y['email']}</small>
+                                </div>
+                                <div class="action-buttons">
+                                    <a href="/update/{personel_id}" class="btn btn-sm back-btn btn-edit">
+                                        <i class="bi bi-pencil"></i> Güncelle
+                                    </a>
+                                </div>
+                            </div>
+            """
+    else:
+        html_rapor += """
+                            <div class="no-data">
+                                <i class="bi bi-inbox" style="font-size: 3rem; color: #dee2e6;"></i>
+                                <h5 class="mt-3">Bugün hiçbir personel işe gelmedi</h5>
+                                <p>Henüz yoklama kaydı bulunmuyor.</p>
+                            </div>
+        """
+    
+    html_rapor += """
+                        </div>
+                        
+                        <!-- Gelmeyenler -->
+                        <div class="col-lg-6">
+                            <h3 class="section-title">
+                                <i class="bi bi-x-circle-fill text-danger"></i>
+                                Bugün Gelmeyenler
+                            </h3>
+    """
+    
+    if gelmeyenler:
+        for g in gelmeyenler:
+            ad_soyad = f"{g['ad']} {g['soyad']}"
+            departman = g['departman'] if g['departman'] else "Belirtilmemiş"
+            
+            html_rapor += f"""
+                            <div class="personel-card absent-card">
+                                <div class="personel-name">
+                                    <i class="bi bi-person-dash me-2"></i>{ad_soyad}
+                                </div>
+                                <div class="personel-info">
+                                    <span class="dept-badge">{departman}</span>
+                                    <br><small class="text-muted mt-1 d-block">{g['email']}</small>
+                                </div>
+                                <div class="action-buttons">
+                                    <a href="/update/{g['id']}" class="btn btn-sm back-btn btn-edit">
+                                        <i class="bi bi-pencil"></i> Güncelle
+                                    </a>
+                                </div>
+                            </div>
+            """
+    else:
+        html_rapor += """
+                            <div class="no-data">
+                                <i class="bi bi-emoji-smile" style="font-size: 3rem; color: #28a745;"></i>
+                                <h5 class="mt-3 text-success">Harika! 🎉</h5>
+                                <p>Tüm personel bugün işe geldi!</p>
+                            </div>
+        """
+    
+    html_rapor += f"""
+                        </div>
+                    </div>
+                    
+                    <!-- Alt Bilgi ve Geri Dön -->
+                    <div class="text-center mt-5 pt-4 border-top">
+                        <p class="text-muted mb-3">
+                            <i class="bi bi-info-circle"></i>
+                            Bu rapor otomatik olarak sistem tarafından oluşturulmuştur.
+                        </p>
+                        <a href="/dashboard" class="back-btn">
+                            <i class="bi bi-arrow-left"></i>
+                            Yönetim Paneli'ne Dön
+                        </a>
+                        <a href="/gunluk_rapor_gonder" class="back-btn" 
+                           onclick="return confirm('Raporu e-posta ile göndermek istediğinizden emin misiniz?')">
+                            <i class="bi bi-envelope"></i>
+                            Raporu Gönder
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    </body>
+    </html>
+    """
+    
+    return html_rapor
 
 if __name__ == '__main__':
     app.run(debug=True)

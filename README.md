@@ -114,7 +114,7 @@ Personel Girişi: Sisteme kayıtlı bir personelin ad, soyad ve e-posta bilgiler
 
 📧 İletişim
 ```bash
-Herhangi bir sorunuz veya geri bildiriminiz varsa, GitHub Issues üzerinden bize ulaşabilirsiniz.
+Herhangi bir sorunuz veya geri bildiriminiz varsa, GitHub Issues üzerinden bana ulaşabilirsiniz.
 ```
 🙌 Katkıda Bulunmak
 ```bash

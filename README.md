@@ -148,6 +148,7 @@ Katkılar her zaman açıktır! Yeni özellikler eklemek, hataları düzeltmek v
 
 <img width="1917" height="877" alt="motivasyon_ekrani" src="https://github.com/user-attachments/assets/745b3758-03ca-412c-9903-96cb4bc63536" />
 
+<img width="1381" height="868" alt="mail_rapor" src="https://github.com/user-attachments/assets/542e63d5-51b2-4735-9e8a-816797aea3de" />
 
 ```bash
 🚀 Hazırlayan: [Alper Akpınar] 

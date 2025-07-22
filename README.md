@@ -121,6 +121,34 @@ Herhangi bir sorunuz veya geri bildiriminiz varsa, GitHub Issues üzerinden bana
 Katkılar her zaman açıktır! Yeni özellikler eklemek, hataları düzeltmek veya performansı artırmak için çekme istekleri (Pull Request) göndermekten çekinmeyin.
 ```
 
+### EKRAN GÖRÜNTÜLERİ
+<img width="1916" height="876" alt="ana_giris" src="https://github.com/user-attachments/assets/0a4b1815-e3b0-42fa-86f2-1d2ebd4b6360" />
+
+<img width="1918" height="876" alt="admin_giris" src="https://github.com/user-attachments/assets/c59e706f-5199-42b8-a796-a0b2b8757aba" />
+
+<img width="1906" height="876" alt="admin_panel" src="https://github.com/user-attachments/assets/83992020-dfa0-4597-9db3-65c47a53f813" />
+
+<img width="1903" height="883" alt="admin_ekleme" src="https://github.com/user-attachments/assets/22ec62af-e891-4920-b146-9fc43afc3b2c" />
+
+<img width="1918" height="878" alt="personel_ekleme" src="https://github.com/user-attachments/assets/970ad483-6331-41ec-bc03-e9212ae22264" />
+
+<img width="1920" height="880" alt="admin_guncelle" src="https://github.com/user-attachments/assets/b3ee1140-c11e-4480-9272-758d42e9b234" />
+
+<img width="1900" height="878" alt="yoklama_ekrani" src="https://github.com/user-attachments/assets/d3b457e0-2e0f-47e8-9c3d-0526d4293baa" />
+
+<img width="1917" height="876" alt="personel_guncelleme" src="https://github.com/user-attachments/assets/322c3c8e-9e92-4074-b4cf-294e1167eb85" />
+
+<img width="1910" height="872" alt="raporonizleme" src="https://github.com/user-attachments/assets/81018bf7-c278-41bf-b3cc-89f5e78460e6" />
+
+<img width="1920" height="881" alt="personel_girisi" src="https://github.com/user-attachments/assets/c423ffb8-681a-4f50-b977-7ef4bb11a229" />
+
+<img width="1920" height="872" alt="personel_kod_ekrani" src="https://github.com/user-attachments/assets/2c1bc7b9-14dc-4cf7-803a-11344412af86" />
+
+<img width="1918" height="877" alt="is_onay_ekrani" src="https://github.com/user-attachments/assets/6a3d4836-c6df-489e-9a00-b7a5a11f869b" />
+
+<img width="1917" height="877" alt="motivasyon_ekrani" src="https://github.com/user-attachments/assets/745b3758-03ca-412c-9903-96cb4bc63536" />
+
+
 ```bash
 🚀 Hazırlayan: [Alper Akpınar] 
 🏢 Proje Versiyonu: 1.0.0
